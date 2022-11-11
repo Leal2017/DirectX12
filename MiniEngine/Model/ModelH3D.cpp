@@ -308,7 +308,7 @@ void ModelH3D::LoadTextures(const std::wstring& basePath)
 
     DescriptorHandle SRVs = m_SRVs;
 
-    TextureRef* MatTextures = m_TextureReferences.data();
+    auto MatTextures = m_TextureReferences.data();
 
     for (uint32_t materialIdx = 0; materialIdx < m_Header.materialCount; ++materialIdx)
     {
@@ -316,19 +316,28 @@ void ModelH3D::LoadTextures(const std::wstring& basePath)
 
         // Load diffuse
         std::wstring diffusePath = basePath + RemoveExt(pMaterial.texDiffusePath);
-        MatTextures[0] = LoadDDSFromFile(diffusePath + L".dds", kWhiteOpaque2D, true);
+        auto diffuseTex = LoadDDSFromFile(diffusePath + L".dds", kWhiteOpaque2D, true);
+        MatTextures[0] = diffuseTex;
 
         // Load specular
         std::wstring specularPath = basePath + RemoveExt(pMaterial.texSpecularPath);
-        MatTextures[1] = LoadDDSFromFile(specularPath + L".dds", kBlackOpaque2D, true);
+        auto specularTex = LoadDDSFromFile(specularPath + L".dds", kBlackOpaque2D, true);
+        MatTextures[1] = specularTex;
         if (!MatTextures[1].IsValid())
-            MatTextures[1] = LoadDDSFromFile(diffusePath + L"_specular.dds", kBlackOpaque2D, true);
+        {
+            auto specularTex2 = LoadDDSFromFile(diffusePath + L"_specular.dds", kBlackOpaque2D, true);
+            MatTextures[1] = specularTex2;
+        }
 
         // Load normal
         std::wstring normalPath = basePath + RemoveExt(pMaterial.texNormalPath);
-        MatTextures[2] = LoadDDSFromFile(normalPath + L".dds", kDefaultNormalMap, false);
+        auto normalTex = LoadDDSFromFile(normalPath + L".dds", kDefaultNormalMap, false);
+        MatTextures[2] = normalTex;
         if (!MatTextures[2].IsValid())
-            MatTextures[2] = LoadDDSFromFile(diffusePath + L"_normal.dds", kDefaultNormalMap, false);
+        {
+            auto normalTex2 = LoadDDSFromFile(diffusePath + L"_normal.dds", kDefaultNormalMap, false);
+            MatTextures[2] = normalTex2;
+        }
 
         uint32_t DestCount = 6;
         uint32_t SourceCounts[] = { 1, 1, 1, 1, 1, 1 };

@@ -56,7 +56,8 @@ void LoadMaterials(Model& model,
         CompileTextureOnDemand(originalFile, textureOptions[ti]);
 
         std::wstring ddsFile = Utility::RemoveExtension(originalFile) + L".dds";
-        model.textures[ti] = TextureManager::LoadDDSFromFile(ddsFile);
+        auto tex = TextureManager::LoadDDSFromFile(ddsFile);
+        model.textures[ti] = tex;
     }
 
     // Generate descriptor tables and record offsets for each material

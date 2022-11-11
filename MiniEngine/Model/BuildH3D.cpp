@@ -153,7 +153,7 @@ bool ModelH3D::BuildModel(ModelData& model, const std::wstring& basePath) const
     // we have.
     for (uint32_t i = 0; i < m_Header.meshCount; ++i)
     {
-        const Mesh& mesh = GetMesh(i);
+        auto mesh = GetMesh(i);
 
         glTF::Accessor PosStream;
         PosStream.dataPtr = m_pVertexData + mesh.vertexDataByteOffset;
@@ -198,8 +198,10 @@ bool ModelH3D::BuildModel(ModelData& model, const std::wstring& basePath) const
         prim.material = &material;
         prim.attribMask = 0xB;
         prim.mode = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-        memcpy(prim.minPos, &mesh.boundingBox.GetMin(), 12);
-        memcpy(prim.maxPos, &mesh.boundingBox.GetMax(), 12);
+        auto boundingBoxMin = mesh.boundingBox.GetMin();
+        auto boundingBoxMax = mesh.boundingBox.GetMin();
+        memcpy(prim.minPos, &boundingBoxMin, 12);
+        memcpy(prim.maxPos, &boundingBoxMax, 12);
         prim.minIndex = 0;
         prim.maxIndex = 0;
 
